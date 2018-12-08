@@ -1,3 +1,4 @@
+import java.util.PriorityQueue;
 
 /**
  * Although this class has a history of several years,
@@ -47,14 +48,35 @@ public class HuffProcessor {
 		int[] counts = readForCounts(in);
 		HuffNode root = makeTreeFromCounts(counts);
 		String[] codings = makeCodingsFromTree(root);
-		
+
 		out.writeBits(BITS_PER_INT, HUFF_TREE);
 		writeHeader(root, out);
-		
+
 		in.reset();
 		writeCompressedBits(codings,in,out);
 		out.close();
 	}
+	private HuffNode makeTreeFromCounts(int[] counts) {
+		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
+
+
+		for(int i = 0; i < ALPH_SIZE; i++) {
+			if(counts[i] > 0)
+				pq.add(new HuffNode(i,counts[i],null,null));
+		}
+
+		while (pq.size() > 1) {
+			HuffNode left = pq.remove();
+			HuffNode right = pq.remove();
+			// create new HuffNode t with weight from
+			HuffNode t = new HuffNode(-1, left.myWeight+right.myWeight, left, right);
+			// left.weight+right.weight and left, right subtrees
+			pq.add(t);
+		}
+		HuffNode root = pq.remove();
+		return root;
+	}
+
 	private int[] readForCounts(BitInputStream in) {
 		int[] freq = new int[ALPH_SIZE+1];
 		while (true){
