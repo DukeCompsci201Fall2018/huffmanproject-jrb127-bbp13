@@ -9,6 +9,7 @@
  * 
  * @author Owen Astrachan
  * @author Jonathan Browning
+ * @author Bhrij Patel
  */
 
 public class HuffProcessor {
