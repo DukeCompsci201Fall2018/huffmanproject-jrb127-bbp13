@@ -56,6 +56,47 @@ public class HuffProcessor {
 		writeCompressedBits(codings,in,out);
 		out.close();
 	}
+	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
+		// TODO Auto-generated method stub
+		String code;
+		for(int i = 0; i < codings.length-1; i++) {
+
+			code = codings[i];
+			out.writeBits(code.length(), Integer.parseInt(code,2));
+		}
+		code = codings[PSEUDO_EOF];
+		out.writeBits(code.length(), Integer.parseInt(code,2));
+		
+	}
+
+	private String[] makeCodingsFromTree(HuffNode root) {
+		String[] encodings = new String[ALPH_SIZE + 1];
+	    codingHelper(root,"",encodings);
+		return encodings;
+	}
+
+	private void codingHelper(HuffNode root, String string, String[] encodings) {
+		if (root.myLeft == null && root.myRight == null) {
+	        encodings[root.myValue] = string;
+	        return;
+	   }
+	   codingHelper(root.myLeft, string+"0", encodings);
+	   codingHelper(root.myRight, string+"1", encodings);
+	}
+
+	private void writeHeader(HuffNode root, BitOutputStream out) {
+		// TODO Auto-generated method stub
+		if(root.myLeft != null || root.myRight != null) {
+			out.writeBits(1,0);
+			writeHeader(root.myLeft, out);
+			writeHeader(root.myRight, out);
+		}
+		else {
+			out.writeBits(1, 1);
+			out.writeBits(BITS_PER_WORD+1, root.myValue);
+		}
+	}
+
 	private HuffNode makeTreeFromCounts(int[] counts) {
 		PriorityQueue<HuffNode> pq = new PriorityQueue<>();
 
