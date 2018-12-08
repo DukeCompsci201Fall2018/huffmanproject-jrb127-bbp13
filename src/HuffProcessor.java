@@ -80,6 +80,9 @@ public class HuffProcessor {
 	private void codingHelper(HuffNode root, String string, String[] encodings) {
 		if (root.myLeft == null && root.myRight == null) {
 	        encodings[root.myValue] = string;
+	        if(myDebugLevel >= DEBUG_HIGH) {
+	        	System.out.printf("encoding for %d is %s\n",  root.myValue, string);
+	        }
 	        return;
 	   }
 	   codingHelper(root.myLeft, string+"0", encodings);
