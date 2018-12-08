@@ -59,9 +59,11 @@ public class HuffProcessor {
 	private void writeCompressedBits(String[] codings, BitInputStream in, BitOutputStream out) {
 		// TODO Auto-generated method stub
 		String code;
-		for(int i = 0; i < codings.length-1; i++) {
-
-			code = codings[i];
+		while(true) {
+			int val = in.readBits(BITS_PER_WORD);
+			if (val == -1)
+				break;
+			code = codings[val];
 			out.writeBits(code.length(), Integer.parseInt(code,2));
 		}
 		code = codings[PSEUDO_EOF];
@@ -105,6 +107,8 @@ public class HuffProcessor {
 			if(counts[i] > 0)
 				pq.add(new HuffNode(i,counts[i],null,null));
 		}
+		
+		pq.add(new HuffNode(PSEUDO_EOF,1));
 
 		while (pq.size() > 1) {
 			HuffNode left = pq.remove();
