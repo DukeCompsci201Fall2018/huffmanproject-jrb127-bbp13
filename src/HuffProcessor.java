@@ -60,10 +60,10 @@ public class HuffProcessor {
 		while (true){
 			int val = in.readBits(BITS_PER_WORD);
 			if (val == -1) break;
-			out.writeBits(BITS_PER_WORD, val);
+			freq[val]++;
 		}
-		out.close();
-		return null;
+		freq[PSEUDO_EOF] = 1;
+		return freq;
 	}
 
 	/**
